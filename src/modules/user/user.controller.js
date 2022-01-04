@@ -1,6 +1,6 @@
 const User = require("./user.model");
 const UserType = require("./user-type.model");
-const jwt = require("jsonwebtoken");
+const { generateAccessToken } = require("./services/user.service")
 
 const login = async (req, res) => {
   try {
@@ -14,11 +14,11 @@ const login = async (req, res) => {
 
     if (!user || !user.password || !user.validPassword(password)) return res.status(400).send("Invalid email or password!");
 
-    const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET, {
-        expiresIn: "1h",
+    res.cookie("access_token", generateAccessToken(user), {
+        httpOnly: true,
+        sameSite: true,
+        signed: true,
     });
-
-    res.cookie("access_token", token, { httpOnly: true, sameSite: true, signed: true });
 
     res.status(200).json(user);
   } catch (err) {
