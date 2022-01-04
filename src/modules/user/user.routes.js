@@ -22,4 +22,5 @@ module.exports = (app) => {
     .delete(controller.deleteUser);
 
   app.route("/api/users/login").post(controller.login);
+
 };

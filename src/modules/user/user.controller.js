@@ -14,12 +14,9 @@ const login = async (req, res) => {
 
     if (!user || !user.password || !user.validPassword(password)) return res.status(400).send("Invalid email or password!");
 
-    //  Generating a json token
-    const payload = { user_id: user.id, email: user.email };
+    const token = jwt.sign({ id: user.id }, "token_secret", { expiresIn: "1h" });
 
-    const token = jwt.sign(payload, "token_secret", { expiresIn: "1h" });
-
-    res.cookie("access_token", token);
+    res.cookie("access_token", token, { httpOnly: true, sameSite: true, signed: true });
 
     res.status(200).json(user);
   } catch (err) {
